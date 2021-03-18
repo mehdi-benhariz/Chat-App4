@@ -2,6 +2,8 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const cors = require("cors");
+const cookieParser = require('cookie-parser');
+
 const {
   addUser,
   removeUser,
@@ -17,13 +19,20 @@ require("dotenv").config({
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-
-app.use(cors());
-//router
-const router = require("./router");
-app.use(router);
-
+// parse application/json
+app.use(express.json());
+// parse application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 // Connect to a data base
+app.use(cors());
+//get the cookies
+app.use(cookieParser());
+
+//router
+const userRouter = require("./user/router");
+app.use("/api/v1", userRouter);
+
+
 require("./db");
 
 io.on("connect", (socket) => {
@@ -51,6 +60,8 @@ io.on("connect", (socket) => {
   });
 
   socket.on("sendMessage", (message, callback) => {
+    console.log(socket.id)
+    
     const user = getUser(socket.id);
 
     io.to(user.room).emit("message", { user: user.name, text: message });

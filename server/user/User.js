@@ -5,18 +5,14 @@ const UserSchema = new Schema({
       type: String,
       required: true,
     },
+    room:{
+        type:String,
+        default:""      
+    },
     email: {
       type: String,
       required: true,
       unique: true,
-    },
-    bio: {
-      type: String,
-      default: "",
-    },
-    location: {
-      type: String,
-      default: "",
     },
     password: {
       type: String,
